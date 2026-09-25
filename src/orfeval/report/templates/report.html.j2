@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport orfeval</title>
+<style>
+  :root {
+    --surface: #fcfcfb; --page: #f4f3ef; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --line: #e1e0d9; --accent: #2a78d6; --warn-bg: #fff7e6; --warn-line: #eda100;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+         font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
+  header { margin-bottom: 28px; }
+  h1 { font-size: 30px; margin: 0 0 4px; }
+  h2 { font-size: 22px; margin: 40px 0 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+  h3 { font-size: 18px; margin: 28px 0 8px; }
+  h4 { font-size: 15px; margin: 20px 0 6px; color: var(--ink-2); }
+  p, li { color: var(--ink); }
+  .subtitle { color: var(--ink-2); margin: 0; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+          padding: 18px 20px; margin: 14px 0; }
+  .note { background: var(--warn-bg); border-left: 3px solid var(--warn-line); padding: 10px 14px;
+          border-radius: 6px; margin: 12px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 8px 0; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--ink-2); font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; }
+  .scroll { overflow-x: auto; }
+  figure { margin: 18px 0; }
+  figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px;
+               background: #fff; }
+  figcaption { color: var(--ink-2); font-size: 14px; margin-top: 6px; }
+  figcaption strong { color: var(--ink); }
+  code { background: #eeede8; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+  .levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .levels .card { margin: 0; }
+  .tag { display: inline-block; font-size: 12px; color: var(--ink-2); border: 1px solid var(--line);
+         border-radius: 999px; padding: 1px 9px; margin-right: 6px; }
+  nav ul { columns: 2; padding-left: 18px; }
+  @media (max-width: 640px) { nav ul { columns: 1; } h1 { font-size: 24px; } }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Rapport orfeval</h1>
+  <p class="subtitle">Prédiction auto-entraînée de gènes procaryotes et évaluation face à l'annotation de référence</p>
+  <p class="subtitle">Généré le {{ generated }} · orfeval {{ project.versions.orfeval }} · {{ runs | length }} analyse(s)</p>
+</header>
+
+<nav class="card">
+  <strong>Sommaire</strong>
+  <ul>
+    <li><a href="#bref">En bref</a></li>
+    <li><a href="#donnees">Données</a></li>
+    <li><a href="#parametres">Paramètres</a></li>
+    <li><a href="#methodes">Méthodes</a></li>
+    {% for run in runs %}<li><a href="#run-{{ run.name }}">Résultats : {{ run.name }}</a></li>{% endfor %}
+    <li><a href="#interpretation">Interprétation</a></li>
+    <li><a href="#limites">Limites</a></li>
+    <li><a href="#reproductibilite">Reproductibilité</a></li>
+  </ul>
+</nav>
+
+<h2 id="bref">En bref</h2>
+<div class="card scroll">
+<table>
+  <thead><tr><th>Analyse</th><th>Génome</th><th>Code</th><th>Gènes prédits</th><th>Sensibilité</th><th>Précision</th><th>F1</th><th>Start exact</th></tr></thead>
+  <tbody>
+  {% for run in runs %}
+    {% set ev = run.evaluation %}
+    <tr>
+      <td><a href="#run-{{ run.name }}">{{ run.name }}</a></td>
+      <td>{{ run.input.seq_id }}</td>
+      <td class="num">{{ run.genetic_code.table }}</td>
+      <td class="num">{{ run.prediction.n_genes | number }}</td>
+      {% if ev %}
+      <td class="num">{{ ev.sensitivity.value | percent }}</td>
+      <td class="num">{{ ev.precision.value | percent }}</td>
+      <td class="num">{{ ev.f1 | number }}</td>
+      <td class="num">{{ ev.start_accuracy.value | percent }}</td>
+      {% else %}
+      <td colspan="4">pas d'annotation de référence</td>
+      {% endif %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if comparison_src %}
+<figure>
+  <img src="{{ comparison_src }}" alt="Comparaison des métriques entre analyses">
+  <figcaption><strong>Comparaison des analyses.</strong> Point : valeur mesurée ; trait : intervalle de confiance de Wilson à 95 %. Les intervalles traduisent l'incertitude d'échantillonnage sur chaque génome, pas la variabilité entre génomes.</figcaption>
+</figure>
+{% endif %}
+
+<h2 id="donnees">Données</h2>
+<div class="card scroll">
+<table>
+  <thead><tr><th>Analyse</th><th>Séquence</th><th>Organisme</th><th>Taille</th><th>Topologie</th><th>GC</th><th>CDS annotées</th><th>Code génétique</th></tr></thead>
+  <tbody>
+  {% for run in runs %}
+    <tr>
+      <td>{{ run.name }}</td>
+      <td>{{ run.input.seq_id }}<br><span class="subtitle">{{ run.input.format }} · {{ run.input.path }}</span></td>
+      <td>{{ run.input.organism or "—" }}</td>
+      <td class="num">{{ run.input.length | number }} nt</td>
+      <td>{{ run.input.topology }}</td>
+      <td class="num">{{ run.composition.gc_content | percent }}</td>
+      <td>
+        {% if run.annotation %}
+        {{ run.annotation.n_reference }} utilisées / {{ run.annotation.n_cds }}<br>
+        <span class="subtitle">exclues : {{ run.annotation.n_pseudo }} pseudogènes, {{ run.annotation.n_partial }} partielles, {{ run.annotation.n_unsupported }} non prises en charge</span>
+        {% else %}—{% endif %}
+      </td>
+      <td>{{ run.genetic_code.table }} <span class="subtitle">({{ run.genetic_code.source }})</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="subtitle">Sommes SHA-256 des fichiers d'entrée : voir la section <a href="#reproductibilite">Reproductibilité</a>.</p>
+
+<h2 id="parametres">Paramètres</h2>
+<div class="card scroll">
+<table>
+  <thead><tr><th>Paramètre (défaut du projet)</th><th>Valeur</th></tr></thead>
+  <tbody>
+  {% for key, value in defaults.items() %}
+    <tr><td><code>{{ key }}</code></td><td>{{ value }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% for run in runs %}{% if run.overrides %}
+<p><span class="tag">{{ run.name }}</span> surcharges : {% for key, value in run.overrides.items() %}<code>{{ key }} = {{ value }}</code> {% endfor %}</p>
+{% endif %}{% endfor %}
+{% for run in runs %}{% if run.genetic_code.source == "configuration" %}
+<p><span class="tag">{{ run.name }}</span> code génétique imposé par la configuration : {{ run.genetic_code.table }} (déclaré dans l'annotation : {{ run.genetic_code.declared or "aucun" }}).</p>
+{% endif %}{% endfor %}
+</div>
+
+<h2 id="methodes">Méthodes</h2>
+<div class="card">
+<ol>
+  <li><strong>Recherche des ORF</strong> sur les six cadres de lecture, avec le code génétique de l'analyse et les codons start autorisés ; les génomes circulaires sont traités comme tels (ORF à cheval sur l'origine).</li>
+  <li><strong>Modèle nul</strong> : dans une séquence aléatoire de même composition, la longueur des régions sans stop suit une loi géométrique. On en déduit la longueur au-delà de laquelle moins d'un ORF est attendu par hasard : ces longs ORF forment l'ensemble d'auto-apprentissage.</li>
+  <li><strong>Modèle codant</strong> : usage des codons appris sur cet ensemble, comparé à un modèle de fond (nucléotides indépendants, sans codon stop). Le score d'un candidat est un log-rapport de vraisemblance en bits.</li>
+  <li><strong>Sélection</strong> : les ORF sont classés par score de détection ; une sélection gloutonne accepte ceux dont le chevauchement avec les gènes déjà acceptés reste sous le seuil (le start peut être décalé vers l'aval pour y parvenir). Seuil de score, puis ré-entraînement sur les gènes prédits.</li>
+  <li><strong>Évaluation</strong> (après coup, le prédicteur n'ayant jamais vu l'annotation) : une prédiction est correcte si elle partage le brin et le codon stop d'une CDS annotée ; le codon start est évalué séparément. Intervalles de confiance de Wilson à 95 %.</li>
+</ol>
+<p class="subtitle">Détails et justifications : <code>docs/methodology.md</code>.</p>
+</div>
+
+{% for run in runs %}
+<h2 id="run-{{ run.name }}">Résultats : {{ run.name }}</h2>
+{% if run.description %}<p>{{ run.description }}</p>{% endif %}
+
+<h3>Résultats techniques</h3>
+<div class="card scroll">
+<table>
+  <tbody>
+    <tr><th>ORF candidats (≥ {{ run.parameters.min_length }} nt)</th><td class="num">{{ run.prediction.n_orfs | number }}</td></tr>
+    <tr><th>Probabilité qu'un codon aléatoire soit un stop</th><td class="num">{{ run.prediction.p_stop | number(4) }}</td></tr>
+    <tr><th>Seuil d'auto-apprentissage</th><td class="num">{{ run.prediction.train_min_length | number }} nt</td></tr>
+    <tr><th>Itérations (séquences d'entraînement → gènes prédits)</th>
+        <td>{% for r in run.prediction.training_rounds %}{{ r.iteration }} : {{ r.n_training_genes }} → {{ r.n_predicted }}{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>
+    <tr><th>Gènes prédits</th><td class="num">{{ run.prediction.n_genes | number }} (longueur moyenne {{ run.prediction.mean_length | number(0) }} nt)</td></tr>
+    <tr><th>Fraction du génome couverte par les prédictions</th><td class="num">{{ run.prediction.coding_fraction | percent }}</td></tr>
+    <tr><th>Codons start</th><td>{% for codon, count in run.prediction.start_codons.items() %}{{ codon }} : {{ count }}{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>
+    <tr><th>Starts décalés pour limiter un chevauchement</th><td class="num">{{ run.prediction.n_start_adjusted | number }}</td></tr>
+    <tr><th>Temps de calcul</th><td class="num">{{ run.elapsed_seconds | number(1) }} s</td></tr>
+  </tbody>
+</table>
+</div>
+
+{% set ev = run.evaluation %}
+{% if ev %}
+<h3>Résultats statistiques</h3>
+<div class="card scroll">
+<table>
+  <thead><tr><th>Métrique</th><th>Valeur [IC 95 %] (effectifs)</th></tr></thead>
+  <tbody>
+    <tr><td>Sensibilité (gènes annotés retrouvés)</td><td class="num">{{ ev.sensitivity | metric }}</td></tr>
+    <tr><td>Précision (prédictions appariées)</td><td class="num">{{ ev.precision | metric }}</td></tr>
+    <tr><td>F1</td><td class="num">{{ ev.f1 | number }}</td></tr>
+    <tr><td>Start exact, parmi les gènes retrouvés</td><td class="num">{{ ev.start_accuracy | metric }}</td></tr>
+    <tr><td>Sensibilité parmi les gènes atteignables (stop canonique, ≥ longueur min.)</td><td class="num">{{ ev.sensitivity_reachable | metric }}</td></tr>
+    <tr><td>Start exact, parmi les retrouvés dont le start est un codon autorisé</td><td class="num">{{ ev.start_accuracy_reachable | metric }}</td></tr>
+    <tr><td>Sensibilité / précision nucléotidiques</td><td class="num">{{ ev.nucleotide_sensitivity | percent }} / {{ ev.nucleotide_precision | percent }}</td></tr>
+    <tr><td>Précision moyenne (AP) : score codant / longueur seule</td><td class="num">{{ ev.average_precision_model | number }} / {{ ev.average_precision_length | number }}</td></tr>
+  </tbody>
+</table>
+<h4>Écarts avec l'annotation</h4>
+<table>
+  <thead><tr><th>Prédictions sans correspondance</th><th>n</th><th>Gènes annotés manqués</th><th>n</th></tr></thead>
+  <tbody>
+  {% set fp = ev.fp_categories.items() | list %}
+  {% set fn = ev.fn_categories.items() | list %}
+  {% for i in range([fp | length, fn | length] | max) %}
+    <tr>
+      <td>{{ fp[i][0] if i < fp | length else "" }}</td><td class="num">{{ fp[i][1] if i < fp | length else "" }}</td>
+      <td>{{ fn[i][0] if i < fn | length else "" }}</td><td class="num">{{ fn[i][1] if i < fn | length else "" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="note">Pas d'annotation de référence pour ce génome : seules les prédictions et les descripteurs sont disponibles.</div>
+{% endif %}
+
+<h3>Constats</h3>
+<div class="card"><ul>{% for fact in run.facts %}<li>{{ fact }}</li>{% endfor %}</ul></div>
+
+<h3>Figures</h3>
+{% for block in run.figure_blocks %}{% if block.src %}
+<figure>
+  <img src="{{ block.src }}" alt="{{ block.title }} — {{ run.name }}" loading="lazy">
+  <figcaption><strong>{{ block.title }}.</strong> {{ block.caption }}</figcaption>
+</figure>
+{% endif %}{% endfor %}
+{% endfor %}
+
+<h2 id="interpretation">Interprétation</h2>
+<div class="levels">
+  <div class="card"><h4>Niveau technique</h4><p>Le pipeline s'est exécuté de bout en bout ; les fichiers de prédictions (TSV, GFF3, protéines FASTA) et les figures ci-dessus sont produits par le code, sans intervention manuelle. Cela ne dit rien, à lui seul, de la qualité biologique des prédictions.</p></div>
+  <div class="card"><h4>Niveau statistique</h4><p>Les métriques mesurent l'accord avec <em>une</em> annotation de référence, sur <em>ce</em> génome. Les intervalles de confiance ne couvrent que l'incertitude d'échantillonnage ; ils ne tiennent pas compte des erreurs de la référence ni de la variabilité entre génomes.</p></div>
+  <div class="card"><h4>Niveau biologique</h4><p>Une prédiction sans correspondance n'est pas forcément fausse (gène non annoté, pseudogène) et un accord avec l'annotation n'est pas une validation expérimentale. Toute conclusion biologique demanderait des données indépendantes (protéomique, transcriptomique, homologie).</p></div>
+</div>
+
+<h2 id="limites">Limites</h2>
+<div class="card"><ul>
+  <li>La référence (annotation GenBank/RefSeq) est en partie issue de prédictions automatiques : elle peut contenir des erreurs de start, des gènes manquants ou superflus.</li>
+  <li>Le modèle codant est d'ordre 0 ou 1 (codons, dicodons) : plus simple que les modèles de Markov d'ordre supérieur des outils de référence (Prodigal, GeneMarkS, Glimmer). orfeval n'a pas vocation à les remplacer.</li>
+  <li>Les gènes courts (&lt; 300 nt) disposent de peu de codons : leur détection reste la plus incertaine.</li>
+  <li>Les gènes qui se chevauchent au-delà de <code>max_overlap</code> ne peuvent pas être tous retrouvés ; les décalages de cadre programmés, sélénoprotéines et introns ne sont pas modélisés.</li>
+  <li>Le modèle nul suppose des nucléotides indépendants ; un génome réel présente des dépendances (dinucléotides, répétitions).</li>
+  <li>Le choix des paramètres par défaut a été vérifié sur les génomes de démonstration : les performances affichées sur ces génomes peuvent être légèrement optimistes.</li>
+  <li>Une seule séquence par fichier est analysée (pas de plasmides ni d'assemblages fragmentés dans cette version).</li>
+</ul></div>
+
+<h2 id="reproductibilite">Reproductibilité</h2>
+<div class="card scroll">
+<table>
+  <tbody>
+    <tr><th>Commande</th><td><code>{{ project.command }}</code></td></tr>
+    <tr><th>Configuration</th><td><code>{{ project.config_file or "—" }}</code></td></tr>
+    <tr><th>Début / fin (UTC)</th><td>{{ project.created_utc }} → {{ project.finished_utc }}</td></tr>
+    {% for key, value in project.versions.items() %}
+    <tr><th>{{ key }}</th><td>{{ value }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h4>Fichiers d'entrée</h4>
+<table>
+  <thead><tr><th>Analyse</th><th>Fichier</th><th>SHA-256</th></tr></thead>
+  <tbody>
+  {% for run in runs %}
+    <tr><td>{{ run.name }}</td><td><code>{{ run.input.path }}</code></td><td><code>{{ run.input.sha256 }}</code></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="subtitle">Le prédicteur est déterministe : mêmes entrées et mêmes paramètres donnent les mêmes prédictions.</p>
+</div>
+</main>
+</body>
+</html>
