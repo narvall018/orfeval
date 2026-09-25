@@ -118,7 +118,7 @@ warn_return_any = true
 strict_equality = true
 
 [[tool.mypy.overrides]]
-module = ["Bio", "Bio.*"]
+module = ["Bio", "Bio.*", "plotly", "plotly.*"]
 ignore_missing_imports = true
 
 # --------------------------------------------------------------------------- pytest
