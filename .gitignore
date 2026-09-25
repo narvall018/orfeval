@@ -1,0 +1,41 @@
+# Environnements
+.venv/
+venv/
+env/
+.python-version
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Outils qualité / tests
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Résultats générés (seul le dossier est versionné)
+results/*
+!results/.gitkeep
+
+# Données brutes téléchargées (les données de démo, elles, sont versionnées)
+data/raw/
+
+# Éditeurs et systèmes
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Configuration locale de l'assistant
+.claude/
+
+# Streamlit
+.streamlit/secrets.toml

@@ -1,0 +1,142 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "orfeval"
+version = "0.1.0"
+description = "Prédiction auto-entraînée de gènes procaryotes et évaluation rigoureuse face à une annotation de référence."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Julien Sade" }]
+keywords = [
+  "bioinformatics",
+  "genomics",
+  "gene-prediction",
+  "prokaryotes",
+  "open-reading-frame",
+  "biopython",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: French",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+  "biopython>=1.83",
+  "jinja2>=3.1",
+  "matplotlib>=3.8",
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "pydantic>=2.5",
+  "pyyaml>=6.0",
+  "rich>=13.0",
+  "typer>=0.12",
+]
+
+[project.optional-dependencies]
+app = ["plotly>=5.20", "streamlit>=1.35"]
+dev = [
+  "mypy>=1.10",
+  "pandas-stubs>=2.1",
+  "pre-commit>=3.7",
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.6",
+  "types-PyYAML>=6.0",
+]
+
+[project.scripts]
+orfeval = "orfeval.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/narvall018/orfeval"
+Documentation = "https://github.com/narvall018/orfeval/tree/main/docs"
+Issues = "https://github.com/narvall018/orfeval/issues"
+Changelog = "https://github.com/narvall018/orfeval/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/orfeval"]
+
+# --------------------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "app", "scripts"]
+
+[tool.ruff.lint]
+select = [
+  "B",    # bugbear
+  "C4",   # compréhensions
+  "D",    # docstrings
+  "E",    # pycodestyle
+  "F",    # pyflakes
+  "I",    # tri des imports
+  "N",    # nommage
+  "PTH",  # pathlib plutôt que os.path
+  "RUF",  # règles ruff
+  "SIM",  # simplifications
+  "UP",   # syntaxe moderne
+  "W",    # avertissements
+]
+ignore = [
+  "D105",   # docstring des méthodes magiques
+  "D107",   # docstring de __init__
+  "D401",   # « mood impératif » : règle propre à l'anglais, sans objet en français
+  "RUF001", # caractères « ambigus » : légitimes dans un texte en français
+  "RUF002",
+  "RUF003",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]
+"app/**" = ["D103"]
+"scripts/**" = ["D103"]
+
+# --------------------------------------------------------------------------- mypy
+[tool.mypy]
+files = ["src/orfeval"]
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = ["Bio", "Bio.*"]
+ignore_missing_imports = true
+
+# --------------------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "integration: tests de bout en bout sur les données de démonstration",
+]
+filterwarnings = [
+  "error::DeprecationWarning:orfeval.*",
+]
+
+[tool.coverage.run]
+source = ["orfeval"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]
