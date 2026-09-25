@@ -5,6 +5,22 @@ selon [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
+### Ajouté
+
+- `orfeval validate` affiche le taux de GC, et accepte `--json` pour les scripts.
+- `orfeval predict --no-figures` : tableaux, GFF3 et protéines seulement (environ un tiers
+  plus rapide sur *E. coli*).
+- `make check` : lint, types et tests en une commande.
+- Marqueur `py.typed` (PEP 561).
+- `.editorconfig`, `.gitattributes`.
+- Dependabot pour les GitHub Actions.
+- Tests : gène du brin − à cheval sur l'origine ; recherche de `config/demo.yaml`.
+
+### Modifié
+
+- CI : durée maximale par job.
+- README : lien vers le projet msannot.
+
 ## [0.1.0] — 2026-09-25
 
 Première version publique.
