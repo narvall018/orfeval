@@ -8,7 +8,7 @@ PORT   ?= 8501
 IMAGE  ?= orfeval:latest
 
 .DEFAULT_GOAL := help
-.PHONY: help venv install install-locked demo test test-fast coverage lint format typecheck \
+.PHONY: help venv install install-locked demo test test-fast coverage lint format typecheck check \
         pre-commit run report figures data docker-build docker-demo docker-app clean
 
 help: ## Affiche cette aide
@@ -47,6 +47,8 @@ lint: ## Vérifie le style (ruff) et les types (mypy)
 	$(BIN)/ruff check src tests app scripts
 	$(BIN)/ruff format --check src tests app scripts
 	$(BIN)/mypy
+
+check: lint test ## Lint, types et tests : à lancer avant un commit ou une PR
 
 format: ## Reformate le code
 	$(BIN)/ruff format src tests app scripts
