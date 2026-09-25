@@ -7,6 +7,7 @@ affichées proprement avec un code de sortie non nul.
 
 from __future__ import annotations
 
+import json
 import logging
 import sys
 from collections.abc import Iterator
@@ -106,6 +107,9 @@ def fetch(
 @app.command()
 def validate(
     genome: Annotated[Path, typer.Argument(help="Fichier GenBank ou FASTA (.gz accepté).")],
+    json_output: Annotated[
+        bool, typer.Option("--json", help="Résumé au format JSON (pour les scripts).")
+    ] = False,
 ) -> None:
     """Vérifie qu'un génome est lisible et résume son contenu."""
     from Bio.SeqUtils import gc_fraction
@@ -115,6 +119,31 @@ def validate(
     with _handle_errors():
         loaded = load_genome(genome)
     data = loaded.genome
+    if json_output:
+        annotation = loaded.annotation
+        summary = {
+            "file": genome.name,
+            "format": loaded.file_format,
+            "seq_id": data.seq_id,
+            "organism": data.organism,
+            "length": data.length,
+            "gc": round(gc_fraction(data.sequence), 4),
+            "topology": data.topology,
+            "n_ambiguous": loaded.n_ambiguous,
+            "declared_table": data.declared_table,
+            "annotation": {
+                "n_cds": annotation.n_cds,
+                "n_reference": annotation.n_reference,
+                "n_pseudo": annotation.n_pseudo,
+                "n_partial": annotation.n_partial,
+                "n_unsupported": annotation.n_unsupported,
+            }
+            if annotation is not None
+            else None,
+            "sha256": loaded.sha256,
+        }
+        typer.echo(json.dumps(summary, ensure_ascii=False, indent=2))
+        return
     table = Table(title=f"Validation de {genome.name}", show_header=False)
     table.add_row("Format", loaded.file_format)
     table.add_row("Séquence", f"{data.seq_id} — {data.description}")

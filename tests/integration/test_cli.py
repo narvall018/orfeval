@@ -74,3 +74,13 @@ def test_predict_without_figures(lambda_path, tmp_path):
     assert (tmp_path / "predictions.tsv").is_file()
     assert not (tmp_path / "figures").exists()
     assert json.loads((tmp_path / "run_summary.json").read_text())["figures"] == {}
+
+
+def test_validate_json_output(mgen_path):
+    result = runner.invoke(app, ["-q", "validate", str(mgen_path), "--json"])
+    assert result.exit_code == 0, result.output
+    summary = json.loads(result.output)
+    assert summary["length"] == 580_076
+    assert summary["declared_table"] == 4
+    assert summary["annotation"]["n_pseudo"] == 20
+    assert 0.31 < summary["gc"] < 0.32
