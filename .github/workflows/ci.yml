@@ -17,6 +17,7 @@ jobs:
   lint:
     name: Lint et typage
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -31,6 +32,7 @@ jobs:
   test:
     name: Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -52,6 +54,7 @@ jobs:
   demo:
     name: Démonstration de bout en bout
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: test
     steps:
       - uses: actions/checkout@v7
@@ -71,6 +74,7 @@ jobs:
   docker:
     name: Image Docker
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: test
     steps:
       - uses: actions/checkout@v7
