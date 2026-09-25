@@ -346,6 +346,8 @@ d'une exécution réelle (`make figures`). Voir
 | **Documentation** | README, 9 documents dans `docs/`, docstrings NumPy en français, changelog, citation |
 | **Interface** | dashboard Streamlit séparé de la logique métier |
 
+*Voir aussi mon autre projet : [msannot](https://github.com/narvall018/msannot), sur l'annotation de petites molécules par spectres MS/MS (chimio-informatique, RDKit).*
+
 ## Contribuer
 
 Les contributions sont bienvenues : environnement de développement, conventions, tests et
