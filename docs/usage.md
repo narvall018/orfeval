@@ -9,8 +9,8 @@ orfeval [--verbose | --quiet] [--log-file FICHIER] COMMANDE [OPTIONS]
 | Commande | Rôle |
 |---|---|
 | `fetch ACCESSION…` | télécharge des génomes GenBank complets depuis le NCBI (`Bio.Entrez`) |
-| `validate GÉNOME` | vérifie un fichier et résume son contenu (taille, topologie, code génétique, CDS) |
-| `predict GÉNOME` | prédit (et évalue si le fichier est annoté) un génome, sans fichier de configuration |
+| `validate GÉNOME` | vérifie un fichier et résume son contenu (taille, GC, topologie, code génétique, CDS) ; `--json` pour les scripts |
+| `predict GÉNOME` | prédit (et évalue si le fichier est annoté) un génome, sans fichier de configuration ; `--no-figures` pour les tableaux seuls |
 | `analyze CONFIG.yaml` | exécute toutes les analyses d'une configuration, puis génère le rapport |
 | `report DOSSIER` | régénère le rapport HTML à partir d'un dossier de résultats, sans recalcul |
 | `demo` | lance la démonstration (`config/demo.yaml`) |
@@ -25,11 +25,15 @@ Python. `--verbose` affiche les messages de débogage.
 # Télécharger un génome (l'e-mail est recommandé par le NCBI)
 orfeval fetch NC_000913.3 --email vous@exemple.org --outdir data/raw
 
-# Vérifier un fichier
+# Vérifier un fichier (tableau lisible, ou JSON pour un script)
 orfeval validate data/raw/NC_000913.3.gb.gz
+orfeval -q validate data/raw/NC_000913.3.gb.gz --json | jq .gc
 
 # Prédire avec des paramètres explicites
 orfeval predict data/raw/NC_000913.3.gb.gz -o results/ecoli --min-length 120 --start-strategy longest
+
+# Tableaux, GFF3 et protéines seulement (environ un tiers plus rapide sur E. coli)
+orfeval predict data/raw/NC_000913.3.gb.gz -o results/ecoli --no-figures
 
 # FASTA sans annotation : prédiction seule, code génétique et topologie à préciser
 orfeval predict mon_genome.fna -o results/mon_genome --table 11 --topology circular

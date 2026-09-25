@@ -10,7 +10,7 @@ cd orfeval
 make install              # .venv + orfeval en mode éditable + outils de dev
 source .venv/bin/activate
 pre-commit install        # vérifications automatiques à chaque commit
-make test && make lint    # tout doit passer avant de commencer
+make check                # lint, types et tests : tout doit passer avant de commencer
 ```
 
 ## Déroulement
@@ -19,7 +19,7 @@ make test && make lint    # tout doit passer avant de commencer
 2. Créez une branche depuis `main` : `git switch -c feat/strategie-start-adaptative`.
 3. Faites des commits petits et explicites, en français à l'impératif ou au nominatif
    (« Ajout du modèle de start appris »).
-4. Vérifiez localement : `make lint`, `make test`, et `orfeval demo` si le comportement
+4. Vérifiez localement : `make check`, et `orfeval demo` si le comportement
    scientifique change.
 5. Ouvrez une *pull request* en remplissant le modèle. La CI doit être verte.
 
