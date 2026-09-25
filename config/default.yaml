@@ -1,0 +1,38 @@
+# Configuration de référence d'orfeval : toutes les options, avec leur valeur par défaut.
+# Copiez ce fichier, adaptez la section `runs`, puis lancez :
+#   orfeval analyze ma_config.yaml
+# Les chemins relatifs sont résolus par rapport au dossier de ce fichier.
+
+output_dir: ../results/analysis
+
+predictor:
+  min_length: 90                 # longueur minimale d'un gène (nt, codon stop inclus)
+  start_codons: [ATG, GTG, TTG]  # doivent être des codons d'initiation du code génétique utilisé
+  start_strategy: longest        # longest | rbs | score (voir docs/methodology.md)
+  coding_model: codon            # codon (ordre 0) | dicodon (ordre 1)
+  pseudocount: 1.0               # pseudo-comptes du modèle codant
+  train_min_length: auto         # auto = longueur au-delà de laquelle < 1 ORF aléatoire attendu
+  min_training_genes: 20         # taille minimale de l'ensemble d'auto-apprentissage
+  self_training_iterations: 2    # itérations d'auto-apprentissage
+  max_overlap: 60                # chevauchement maximal toléré entre deux gènes (nt)
+  score_threshold: 0.0           # score de détection minimal (bits)
+  rbs_weight: 1.0                # stratégie « score » : bonus (bits) par nt du motif SD
+  rbs_min_motif: 3               # longueur minimale du motif de Shine-Dalgarno
+  rbs_spacer_min: 3              # distance minimale motif → codon start (nt)
+  rbs_spacer_max: 15             # distance maximale motif → codon start (nt)
+  rbs_window: 21                 # région amont examinée (nt)
+
+analysis:
+  gc_window: auto                # fenêtre du GC skew (nt) ; auto ≈ 200 fenêtres par génome
+  upstream_length: 25            # longueur du profil amont des starts (nt)
+  length_bins: [150, 300, 600, 1200]
+  figure_dpi: 130
+
+runs:
+  - name: mon_genome
+    genome: ../data/raw/NC_001416.1.gb.gz
+    description: "Exemple : remplacez par votre génome (GenBank pour l'évaluation, FASTA sinon)."
+    # translation_table: 11      # force le code génétique (sinon : /transl_table de l'annotation)
+    # topology: circular         # force la topologie (sinon : celle du fichier, ou linéaire)
+    # predictor:                 # surcharges propres à cette analyse
+    #   start_strategy: rbs

@@ -1,0 +1,32 @@
+# Démonstration d'orfeval (lancée par `orfeval demo` ou `make demo`).
+# Deux génomes publics de petite taille, versionnés dans data/demo (voir data/README.md).
+
+output_dir: ../results/demo
+
+runs:
+  - name: lambda
+    genome: ../data/demo/NC_001416.1.gb.gz
+    description: >-
+      Phage lambda (48,5 kb, linéaire, code 11) : petit génome dense, riche en gènes
+      chevauchants.
+
+  - name: mgenitalium
+    genome: ../data/demo/NC_000908.2.gb.gz
+    description: >-
+      Mycoplasmoides (Mycoplasma) genitalium G37 (580 kb, circulaire) : génome bactérien
+      minimal, riche en AT, qui utilise le code génétique 4 (TGA code le tryptophane).
+
+  - name: mgenitalium_code11
+    genome: ../data/demo/NC_000908.2.gb.gz
+    translation_table: 11
+    description: >-
+      Expérience de contrôle : même génome, analysé volontairement avec le code
+      bactérien standard (11), où TGA est un codon stop.
+
+  - name: mgenitalium_rbs
+    genome: ../data/demo/NC_000908.2.gb.gz
+    predictor:
+      start_strategy: rbs
+    description: >-
+      Analyse de sensibilité : choix du codon start guidé par le motif de
+      Shine-Dalgarno plutôt que par l'ORF le plus long.
