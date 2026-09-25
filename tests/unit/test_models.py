@@ -46,3 +46,14 @@ def test_upstream_sequence():
     assert upstream_sequence(sequence, Interval(2, 11, 1), 4, circular=True) == "CCAC"
     # brin − : l'amont se lit à droite du gène, en complément inverse
     assert upstream_sequence(sequence, Interval(0, 6, -1), 3, circular=False) == "TAC"
+
+
+def test_minus_strand_across_origin():
+    """Gène du brin − qui chevauche l'origine d'un génome circulaire de 10 nt."""
+    sequence = "AACCGGTTAC"
+    # brin + : "AC" (positions 8-9) + "AA" (0-1) ; brin − : complément inverse
+    assert extract_sequence(sequence, Interval(8, 12, -1)) == "TTGT"
+    gene = Interval(5, 10, -1)
+    # l'amont d'un gène du brin − se lit à droite, ici après l'origine
+    assert upstream_sequence(sequence, gene, 3, circular=True) == "GTT"
+    assert upstream_sequence(sequence, gene, 3, circular=False) is None
