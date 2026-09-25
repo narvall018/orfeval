@@ -1,0 +1,4 @@
+# Fins de ligne normalisées (LF) et fichiers binaires explicites.
+* text=auto eol=lf
+*.gz binary
+*.png binary
