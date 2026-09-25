@@ -5,6 +5,8 @@ selon [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
+## [0.1.1] — 2026-09-25
+
 ### Ajouté
 
 - `orfeval validate` affiche le taux de GC, et accepte `--json` pour les scripts.
@@ -62,5 +64,6 @@ Première version publique.
 - Stratégie de start par défaut : `longest`, retenue après comparaison sur les génomes de
   démonstration (voir `docs/methodology.md`, section 11).
 
-[Non publié]: https://github.com/narvall018/orfeval/compare/v0.1.0...HEAD
+[Non publié]: https://github.com/narvall018/orfeval/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/narvall018/orfeval/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/narvall018/orfeval/releases/tag/v0.1.0

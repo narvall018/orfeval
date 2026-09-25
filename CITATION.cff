@@ -11,7 +11,7 @@ authors:
   - given-names: Julien
     family-names: Sade
     alias: narvall018
-version: 0.1.0
+version: 0.1.1
 date-released: "2026-09-25"
 license: MIT
 repository-code: "https://github.com/narvall018/orfeval"
