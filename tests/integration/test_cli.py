@@ -64,3 +64,13 @@ def test_demo_runs_end_to_end(tmp_path):
     rebuilt = runner.invoke(app, ["report", str(tmp_path), "-o", str(tmp_path / "copie.html")])
     assert rebuilt.exit_code == 0
     assert (tmp_path / "copie.html").is_file()
+
+
+def test_predict_without_figures(lambda_path, tmp_path):
+    result = runner.invoke(
+        app, ["-q", "predict", str(lambda_path), "-o", str(tmp_path), "--no-figures"]
+    )
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "predictions.tsv").is_file()
+    assert not (tmp_path / "figures").exists()
+    assert json.loads((tmp_path / "run_summary.json").read_text())["figures"] == {}

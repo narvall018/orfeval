@@ -161,6 +161,9 @@ def predict(
         str | None, typer.Option(help="Force la topologie : linear ou circular.")
     ] = None,
     name: Annotated[str | None, typer.Option(help="Nom de l'analyse (préfixe des gènes).")] = None,
+    figures: Annotated[
+        bool, typer.Option(help="Produit les figures (--no-figures : tableaux seulement).")
+    ] = True,
 ) -> None:
     """Prédit les gènes d'un génome et écrit TSV, GFF3, protéines et figures."""
     from orfeval.io.genome import load_genome
@@ -185,7 +188,7 @@ def predict(
         loaded = load_genome(genome, topology=run.topology)
         project = ProjectConfig(runs=[run])
         result = analyze_genome(loaded, run, predictor, project.analysis)
-        write_run(result, outdir, dpi=project.analysis.figure_dpi)
+        write_run(result, outdir, dpi=project.analysis.figure_dpi, figures=figures)
 
     console.print(
         f"[green]✓[/] {len(result.prediction.genes)} gènes prédits "

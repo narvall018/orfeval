@@ -368,8 +368,14 @@ def run_summary(result: RunResult, figure_files: dict[str, str]) -> dict[str, An
     }
 
 
-def write_run(result: RunResult, run_dir: Path, *, dpi: int = 130) -> dict[str, Any]:
-    """Écrit tous les fichiers d'une analyse et renvoie son résumé."""
+def write_run(
+    result: RunResult, run_dir: Path, *, dpi: int = 130, figures: bool = True
+) -> dict[str, Any]:
+    """Écrit tous les fichiers d'une analyse et renvoie son résumé.
+
+    Avec ``figures=False``, seuls les tableaux et le résumé sont écrits (plus rapide pour
+    les grands génomes).
+    """
     genome = result.loaded.genome
     genes = result.prediction.genes
     name = result.run.name
@@ -388,7 +394,7 @@ def write_run(result: RunResult, run_dir: Path, *, dpi: int = 130) -> dict[str, 
         write_tsv(result.rscu, run_dir / "codon_usage.tsv")
 
     figure_files: dict[str, str] = {}
-    for key, figure in build_figures(result).items():
+    for key, figure in (build_figures(result) if figures else {}).items():
         relative = f"figures/{key}.png"
         save_figure(figure, run_dir / relative, dpi=dpi)
         figure_files[key] = relative
