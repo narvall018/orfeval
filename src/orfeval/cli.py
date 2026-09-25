@@ -108,6 +108,8 @@ def validate(
     genome: Annotated[Path, typer.Argument(help="Fichier GenBank ou FASTA (.gz accepté).")],
 ) -> None:
     """Vérifie qu'un génome est lisible et résume son contenu."""
+    from Bio.SeqUtils import gc_fraction
+
     from orfeval.io.genome import load_genome
 
     with _handle_errors():
@@ -118,6 +120,7 @@ def validate(
     table.add_row("Séquence", f"{data.seq_id} — {data.description}")
     table.add_row("Organisme", data.organism or "non renseigné")
     table.add_row("Longueur", f"{data.length:,} nt".replace(",", " "))
+    table.add_row("GC", f"{gc_fraction(data.sequence):.1%}")
     table.add_row("Topologie", data.topology)
     table.add_row("Bases ambiguës", str(loaded.n_ambiguous))
     table.add_row(

@@ -22,6 +22,7 @@ def test_validate_demo_genome(mgen_path):
     result = runner.invoke(app, ["validate", str(mgen_path)])
     assert result.exit_code == 0, result.output
     assert "580" in result.output
+    assert "31.7%" in result.output  # GC de M. genitalium
     assert "Fichier valide" in result.output
 
 
