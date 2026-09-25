@@ -84,3 +84,15 @@ def test_validate_json_output(mgen_path):
     assert summary["declared_table"] == 4
     assert summary["annotation"]["n_pseudo"] == 20
     assert 0.31 < summary["gc"] < 0.32
+
+
+def test_demo_config_is_found_from_a_subfolder(monkeypatch):
+    from pathlib import Path
+
+    from orfeval import cli
+
+    root = Path(__file__).resolve().parents[2]
+    assert cli.find_demo_config(root / "docs") == root / "config" / "demo.yaml"
+    monkeypatch.setattr(cli, "DEMO_CONFIG", Path("config") / "absente.yaml")
+    with pytest.raises(cli.OrfevalError, match="introuvable"):
+        cli.find_demo_config(root / "docs")
