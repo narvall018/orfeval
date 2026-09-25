@@ -234,7 +234,7 @@
 <h2 id="limites">Limites</h2>
 <div class="card"><ul>
   <li>La référence (annotation GenBank/RefSeq) est en partie issue de prédictions automatiques : elle peut contenir des erreurs de start, des gènes manquants ou superflus.</li>
-  <li>Le modèle codant est d'ordre 0 ou 1 (codons, dicodons) : plus simple que les modèles de Markov d'ordre supérieur des outils de référence (Prodigal, GeneMarkS, Glimmer). orfeval n'a pas vocation à les remplacer.</li>
+  <li>Le modèle codant se limite aux codons ou dicodons, sans modèle de start entraîné : il est plus simple que ceux des outils de référence (Glimmer, GeneMarkS, Prodigal), qu'orfeval n'a pas vocation à remplacer.</li>
   <li>Les gènes courts (&lt; 300 nt) disposent de peu de codons : leur détection reste la plus incertaine.</li>
   <li>Les gènes qui se chevauchent au-delà de <code>max_overlap</code> ne peuvent pas être tous retrouvés ; les décalages de cadre programmés, sélénoprotéines et introns ne sont pas modélisés.</li>
   <li>Le modèle nul suppose des nucléotides indépendants ; un génome réel présente des dépendances (dinucléotides, répétitions).</li>

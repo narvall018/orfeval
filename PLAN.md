@@ -66,20 +66,35 @@ app/                    # dashboard Streamlit (appelle uniquement l'API du packa
 
 - [x] Inspection de l'environnement (Python 3.12, réseau, GitHub)
 - [x] Choix du sujet et des données de démonstration
-- [ ] Squelette : pyproject, configuration qualité, arborescence
-- [ ] Entrées/sorties et validation des génomes
-- [ ] Recherche d'ORF + modèle nul
-- [ ] Modèle codant, RBS, sélection, prédicteur auto-entraîné
-- [ ] Évaluation
-- [ ] Descripteurs du génome
-- [ ] Figures, pipeline, écriture des résultats
-- [ ] Rapport HTML
-- [ ] CLI
-- [ ] Tests unitaires et d'intégration (exécutés)
-- [ ] Dashboard Streamlit
-- [ ] Docker, Makefile, CI GitHub Actions, pre-commit
-- [ ] Documentation (`docs/`) et README avec les résultats réels de la démo
-- [ ] Vérification finale (lint, typage, tests, démo) puis publication GitHub
+- [x] Squelette : pyproject, configuration qualité, arborescence
+- [x] Entrées/sorties et validation des génomes
+- [x] Recherche d'ORF + modèle nul
+- [x] Modèle codant, RBS, sélection, prédicteur auto-entraîné
+- [x] Évaluation
+- [x] Descripteurs du génome
+- [x] Figures, pipeline, écriture des résultats
+- [x] Rapport HTML
+- [x] CLI
+- [x] Tests unitaires et d'intégration (exécutés)
+- [x] Dashboard Streamlit
+- [x] Docker, Makefile, CI GitHub Actions, pre-commit
+- [x] Documentation (`docs/`) et README avec les résultats réels de la démo
+- [x] Vérification finale (lint, typage, tests, démo) puis publication GitHub
+
+## 7. Décisions prises en cours de route
+
+- **Détection et placement du start séparés** : la première version utilisait un seul score,
+  et la stratégie « ORF le plus long » perdait des gènes par excès de chevauchement.
+- **Stratégie de start par défaut `longest`** (au lieu de `rbs` prévu) : `rbs` s'effondre sur
+  *M. genitalium* (signal Shine-Dalgarno faible), mais aide sur *E. coli*. Voir
+  `docs/methodology.md`, section 11.
+- **Catégorisation des écarts** ajoutée : une part des « faux positifs » recouvre des
+  pseudogènes exclus de la référence.
+- **Génome indépendant (*E. coli* K-12)** utilisé comme contrôle, sans réglage de paramètre.
+
+## 8. Suites possibles
+
+Voir la section *Roadmap* du README.
 
 ## 6. Règles scientifiques du projet
 

@@ -1,0 +1,17 @@
+# Analyse de sensibilité : effet du choix du codon start et du modèle codant.
+#   orfeval analyze config/sensitivity.yaml
+# Les résultats sont discutés dans docs/methodology.md (section « Choix des paramètres »).
+# Attention : ces comparaisons portent sur les génomes de démonstration eux-mêmes ;
+# retenir la meilleure variante sur ces données exposerait à un sur-ajustement.
+
+output_dir: ../results/sensitivity
+
+runs:
+  - {name: lambda_longest, genome: ../data/demo/NC_001416.1.gb.gz}
+  - {name: lambda_rbs, genome: ../data/demo/NC_001416.1.gb.gz, predictor: {start_strategy: rbs}}
+  - {name: lambda_score, genome: ../data/demo/NC_001416.1.gb.gz, predictor: {start_strategy: score}}
+  - {name: lambda_dicodon, genome: ../data/demo/NC_001416.1.gb.gz, predictor: {coding_model: dicodon}}
+  - {name: mgen_longest, genome: ../data/demo/NC_000908.2.gb.gz}
+  - {name: mgen_rbs, genome: ../data/demo/NC_000908.2.gb.gz, predictor: {start_strategy: rbs}}
+  - {name: mgen_score, genome: ../data/demo/NC_000908.2.gb.gz, predictor: {start_strategy: score}}
+  - {name: mgen_dicodon, genome: ../data/demo/NC_000908.2.gb.gz, predictor: {coding_model: dicodon}}

@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "Si vous utilisez ce logiciel, merci de le citer comme ci-dessous."
+title: "orfeval : prédiction auto-entraînée de gènes procaryotes et évaluation face à une annotation de référence"
+abstract: >-
+  orfeval prédit les gènes codant des protéines de génomes procaryotes à partir de leur seule
+  séquence (recherche d'ORF, modèle nul géométrique, modèle codant auto-entraîné) et évalue
+  les prédictions face à l'annotation GenBank (appariement par extrémité 3', intervalles de
+  Wilson, courbes précision-rappel, analyse des écarts).
+type: software
+authors:
+  - given-names: Julien
+    family-names: Sade
+    alias: narvall018
+version: 0.1.0
+date-released: "2026-09-25"
+license: MIT
+repository-code: "https://github.com/narvall018/orfeval"
+keywords:
+  - bioinformatics
+  - gene prediction
+  - prokaryotic genomics
+  - open reading frame
+  - Biopython
